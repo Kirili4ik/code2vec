@@ -1,19 +1,20 @@
 import traceback
 
+from keras.models import Model
 from common import common
 from extractor import Extractor
 
 SHOW_TOP_CONTEXTS = 10
 MAX_PATH_LENGTH = 8
-MAX_PATH_WIDTH = 2
-JAR_PATH = 'JavaExtractor/JPredict/target/JavaExtractor-0.0.1-SNAPSHOT.jar'
+MAX_PATH_WIDTH = 1
+JAR_PATH = 'cd2vec/cli.jar'
 
 
 class InteractivePredictor:
     exit_keywords = ['exit', 'quit', 'q']
 
     def __init__(self, config, model):
-        model.predict([])
+        # model.predict([])
         self.model = model
         self.config = config
         self.path_extractor = Extractor(config,
@@ -26,7 +27,7 @@ class InteractivePredictor:
             return file.readlines()
 
     def predict(self):
-        input_filename = 'Input.java'
+        input_filename = 'pred_files/Input.py'
         print('Starting interactive prediction...')
         while True:
             print(
@@ -39,7 +40,7 @@ class InteractivePredictor:
                 predict_lines, hash_to_string_dict = self.path_extractor.extract_paths(input_filename)
             except ValueError as e:
                 print(e)
-                continue
+
             raw_prediction_results = self.model.predict(predict_lines)
             method_prediction_results = common.parse_prediction_results(
                 raw_prediction_results, hash_to_string_dict,

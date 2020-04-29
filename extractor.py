@@ -9,17 +9,20 @@ class Extractor:
         self.jar_path = jar_path
 
     def extract_paths(self, path):
-        command = ['java', '-cp', self.jar_path, 'JavaExtractor.App', '--max_path_length',
-                   str(self.max_path_length), '--max_path_width', str(self.max_path_width), '--file', path, '--no_hash']
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = process.communicate()
-        output = out.decode().splitlines()
-        if len(output) == 0:
-            err = err.decode()
-            raise ValueError(err)
+        #command = ['java', '-jar', self.jar_path, 'code2vec', '--lang', 'py', '--project', 'pred_files', '--output', 'cd2vec' , '--maxH', str(self.max_path_length), '--maxW', str(self.max_path_width)]
+
+        output_file = open('cd2vec/path_contexts_0.csv', 'r')
+        
+        #process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        #out, err = process.communicate()
+        #output = out.decode().splitlines()
+        #if len(output_file) == 0:
+        #    err = err.decode()
+        #    raise ValueError(err)
+
         hash_to_string_dict = {}
         result = []
-        for i, line in enumerate(output):
+        for i, line in enumerate(output_file):
             parts = line.rstrip().split(' ')
             method_name = parts[0]
             current_result_line_parts = [method_name]

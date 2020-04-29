@@ -8,7 +8,7 @@ from functools import reduce
 from common import common
 
 
-class WordsSubtokenMetricBase(tf.metrics.Metric):
+class WordsSubtokenMetricBase(tf.metrics.Metric): # KIR
     FilterType = Callable[[tf.Tensor, tf.Tensor], tf.Tensor]
 
     def __init__(self,

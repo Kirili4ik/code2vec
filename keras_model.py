@@ -28,6 +28,7 @@ class Code2VecModel(Code2VecModelBase):
     def __init__(self, config: Config):
         self.keras_train_model: Optional[keras.Model] = None
         self.keras_eval_model: Optional[keras.Model] = None
+        self.int_lev_model: Optional[keras.Model] = None
         self.keras_model_predict_function: Optional[K.GraphExecutionFunction] = None
         self.training_status: ModelTrainingStatus = ModelTrainingStatus()
         self._checkpoint: Optional[tf.train.Checkpoint] = None
@@ -64,7 +65,7 @@ class Code2VecModel(Code2VecModelBase):
         # The final code vectors are received by applying attention to the "densed" context vectors.
         code_vectors, attention_weights = AttentionLayer(name='attention')(
             [context_after_dense, context_valid_mask])
-
+	
         # "Decode": Now we use another dense layer to get the target word embedding from each code vector.
         target_index = Dense(
             self.vocabs.target_vocab.size, use_bias=False, activation='softmax', name='target_index')(code_vectors)
@@ -72,6 +73,13 @@ class Code2VecModel(Code2VecModelBase):
         # Wrap the layers into a Keras model, using our subtoken-metrics and the CE loss.
         inputs = [path_source_token_input, path_input, path_target_token_input, context_valid_mask]
         self.keras_train_model = keras.Model(inputs=inputs, outputs=target_index)
+
+
+
+        # my stuff for embeddings
+        layer_name = 'attention'
+        self.int_lev_model = keras.Model(inputs=self.keras_train_model.input, \
+            outputs=self.keras_train_model.get_layer(layer_name).output)
 
         # Actual target word predictions (as strings). Used as a second output layer.
         # Used for predict() and for the evaluation metrics calculations.
@@ -114,7 +122,7 @@ class Code2VecModel(Code2VecModelBase):
 
     @classmethod
     def _create_optimizer(cls):
-        return tf.optimizers.Adam()
+        return tf.optimizers.Adam() # added .keras KIR
 
     def _compile_keras_model(self, optimizer=None):
         if optimizer is None:
@@ -183,7 +191,12 @@ class Code2VecModel(Code2VecModelBase):
             val_data_input_reader.get_dataset(),
             steps=self.config.test_steps,
             verbose=self.config.VERBOSE_MODE)
+	
         k = self.config.TOP_K_WORDS_CONSIDERED_DURING_PREDICTION
+        
+        with open('log.txt', 'w') as log_output_file:
+            log_output_file.write(str(eval_res) + '\n')
+
         return ModelEvaluationResults(
             topk_acc=eval_res[3:k+3],
             subtoken_precision=eval_res[k+3],
@@ -191,6 +204,7 @@ class Code2VecModel(Code2VecModelBase):
             subtoken_f1=eval_res[k+5],
             loss=eval_res[1]
         )
+
 
     def predict(self, predict_data_rows: Iterable[str]) -> List[ModelPredictionResults]:
         predict_input_reader = self._create_data_reader(estimator_action=EstimatorAction.Predict)
@@ -200,6 +214,10 @@ class Code2VecModel(Code2VecModelBase):
             # perform the actual prediction and get raw results.
             input_for_predict = input_row[0][:4]  # we want only the relevant input vectors (w.o. the targets).
             prediction_results = self.keras_model_predict_function(input_for_predict)
+            
+            embedding = self.int_lev_model.predict(input_for_predict)
+            print(np.array(embedding[0][0]), file=open('cd2vec/EMBEDDINGS.txt', 'w'))
+
 
             # make `input_row` and `prediction_results` easy to read (by accessing named fields).
             prediction_results = KerasPredictionModelOutput(
@@ -294,6 +312,16 @@ class Code2VecModel(Code2VecModelBase):
                 self._get_checkpoint(), self.config.entire_model_save_path,
                 max_to_keep=self.config.MAX_TO_KEEP)
         return self._checkpoint_manager
+
+    # my embeddings
+    #def _get_layer(self, layer_name):
+    #    res = self.int_lev_model.predict()
+
+        #my_get_layer = K.function([self.keras_train_model.layers[0].input, K.learning_phase()],
+                                  #[self.keras_train_model.layers[9].output])
+        # weight = K.print_tensor(self.keras_train_model.get_layer(layer_name).output[0])
+        #layer_output = my_get_layer([x, 1])[0]        
+        #return layer_output
 
     def _get_vocab_embedding_as_np_array(self, vocab_type: VocabType) -> np.ndarray:
         assert vocab_type in VocabType

@@ -1,0 +1,2 @@
+def imports():
+	df.info()

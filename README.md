@@ -1,6 +1,6 @@
-This is my version of code2vec work for Python3. It works only on keras implementation as for now. Some basic changes done:
+This is my version of [code2vec](https://github.com/tech-srl/code2vec) work for Python3. It works only on keras implementation as for now. Some basic changes done:
 
-0) Basic [preprocessing](pre-preprocessing.ipynb) for code snippets
+0) Added Jupyter notebook with [preprocessing](pre-preprocessing.ipynb) of code snippets
 1) Support of Python3 code thx to [JB parser](https://github.com/JetBrains-Research/astminer/tree/master-dev/astminer-cli)
 2) Support of code embeddings (a.k.a. before the last dense layer, witch originally works only for TF implementation)
 3) Getting target and token embeddings by running .sh
@@ -12,7 +12,7 @@ The rest of the README is almost the same with the original [code2vec](https://g
 
 # Code2vec
 A neural network for learning distributed representations of code.
-This is an official implementation of the model described in:
+This is made on top of the implementation of the model described in:
 
 [Uri Alon](http://urialon.cswp.cs.technion.ac.il), [Meital Zilberstein](http://www.cs.technion.ac.il/~mbs/), [Omer Levy](https://levyomer.wordpress.com) and [Eran Yahav](http://www.cs.technion.ac.il/~yahave/),
 "code2vec: Learning Distributed Representations of Code", POPL'2019 [[PDF]](https://urialon.cswp.cs.technion.ac.il/wp-content/uploads/sites/83/2018/12/code2vec-popl19.pdf)

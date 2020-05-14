@@ -27,7 +27,7 @@ An **online demo** is available at [https://code2vec.org/](https://code2vec.org/
 
 #### Only keras version for now.
 
-<center style="padding: 40px"><img width="70%" src="https://github.com/tech-srl/code2vec/raw/master/images/network.png" /></center>
+<center style="padding: 40px"><img width="95%" src="https://github.com/Kirili4ik/NL2ML/blob/master/c2v-arc.jpg" /></center>
 
 Table of Contents
 =================

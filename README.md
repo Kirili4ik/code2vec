@@ -1,7 +1,7 @@
 This is my version of [code2vec](https://github.com/tech-srl/code2vec) work for Python3. It works only on keras implementation as for now. Some basic changes done:
 
 0) Added Jupyter notebook with [preprocessing](pre-preprocessing.ipynb) of code snippets
-1) Support of Python3 code thx to [JB miner](https://github.com/JetBrains-Research/astminer/tree/master-dev/astminer-cli)
+1) Support of Python3 code thx to [JB miner](https://github.com/JetBrains-Research/astminer)
 2) Support of code embeddings (a.k.a. before the last dense layer, witch originally works only for TF implementation)
 3) Getting target and token embeddings by running .sh
 4) Getting top 10 synonyms for given label.
